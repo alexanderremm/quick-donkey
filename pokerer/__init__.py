@@ -172,8 +172,9 @@ def create_app(test_config=None):
             return
         
         # Update player's ready status
-        is_ready = data["data"]
-        GM.update_player_ready_status(game, name, is_ready)
+        is_ready = data["is_ready"]
+        vote = data["vote"]
+        GM.update_player_info(game, name, is_ready, vote)
         if is_ready:
             msg = Message(name, "is ready!")
             print(f"{name} is ready!\n")

@@ -9,39 +9,39 @@
     <div class="voting" id="voting">
         <nav>
             <label>
-              <input type="radio" name=group value="I1" checked >
+              <input type="radio" name=vote_card value="1" checked >
               <span>1</span> 
             </label>
             <label>
-              <input type="radio" name=group value="I2">
+              <input type="radio" name=vote_card value="2">
               <span>2</span> 
             </label>
             <label>
-              <input type="radio" name=group value="I3">
+              <input type="radio" name=vote_card value="3">
               <span>3</span> 
             </label>
             <label>
-              <input type="radio" name=group value="I4">
+              <input type="radio" name=vote_card value="5">
               <span>5</span> 
             </label>
             <label>
-              <input type="radio" name=group value="I5">
+              <input type="radio" name=vote_card value="8">
               <span>8</span> 
             </label>
             <label>
-                <input type="radio" name=group value="I6">
+                <input type="radio" name=vote_card value="13">
                 <span>13</span> 
             </label>
             <label>
-                <input type="radio" name=group value="I7">
+                <input type="radio" name=vote_card value="21">
                 <span>21</span> 
             </label>
             <label>
-                <input type="radio" name=group value="I8">
+                <input type="radio" name=vote_card value="?">
                 <span>❓</span> 
             </label>
             <label>
-                <input type="radio" name=group value="I9">
+                <input type="radio" name=vote_card value="C">
                 <span>☕</span> 
             </label>
         </nav>
@@ -153,11 +153,19 @@
     }
 
     const readyUp = () => {
-        socketio.emit("ready_update", {data: true});
+        const vote_vals = document.getElementsByName("vote_card");
+        var val = null;
+        for (var i=0; i < vote_vals.length; i++) {
+            if (vote_vals[i].checked) {
+                val = vote_vals[i].value;
+                console.log(val);
+            }
+        }
+        socketio.emit("ready_update", {is_ready: true, vote: val});
     }
 
     const unready = () => {
-        socketio.emit("ready_update", {data: false});
+        socketio.emit("ready_update", {is_ready: false, vote: null});
     }
 </script>
 {% for msg in messages %}

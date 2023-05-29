@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="game-box">
+    <h2>Game Code: {{game}}</h2>
+    <button class="btn btn-danger" onclick="leaveGame()">Leave Game</button>
+    <hr>
+    <h4>Voting:</h4>
+    <hr>
+    <div class="voting" id="voting">
+        <nav>
+            <label>
+              <input type="radio" name=group value="I1" checked >
+              <span>1</span> 
+            </label>
+            <label>
+              <input type="radio" name=group value="I2">
+              <span>2</span> 
+            </label>
+            <label>
+              <input type="radio" name=group value="I3">
+              <span>3</span> 
+            </label>
+            <label>
+              <input type="radio" name=group value="I4">
+              <span>5</span> 
+            </label>
+            <label>
+              <input type="radio" name=group value="I5">
+              <span>8</span> 
+            </label>
+            <label>
+                <input type="radio" name=group value="I6">
+                <span>13</span> 
+            </label>
+            <label>
+                <input type="radio" name=group value="I7">
+                <span>21</span> 
+            </label>
+            <label>
+                <input type="radio" name=group value="I8">
+                <span>❓</span> 
+            </label>
+            <label>
+                <input type="radio" name=group value="I9">
+                <span>☕</span> 
+            </label>
+        </nav>
+        <button class="btn btn-success btn-vote" id="ready">Ready</button>
+        <button class="btn btn-secondary btn-vote" id="unready">Unready</button>
+    </div>
+    <hr>
+    <h4>Players:</h4>
+    <hr>
+    <div class="log" id="players">
+        <ol id="players_list"></ol>
+    </div>
+    <hr>
+    <h4>Log:</h4>
+    <hr>
+    <div class="log" id="log">
+    </div>
+    <div class="inputs">
+        <input type="text" rows="3" placeholder="Message" name="message" id="message"/>
+        <button type="button" name="send" class="btn btn-primary" id="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+<script type="text/javascript">
+    var socketio = io();
+
+    const messages = document.getElementById("log");
+
+    const createMessage = (name, msg, date) => {
+        const content = 
+        `
+        <div class="text">
+            <span>
+                <strong>${name}</strong>: ${msg}
+            </span>
+            <span class="muted">
+                ${date}
+            </span>
+        </div>
+        `
+        messages.innerHTML += content;
+    }
+
+    socketio.on("message", (data) => {
+        createMessage(data.name, data.message, data.date);
+        var scroller = document.getElementById("log");
+        scroller.scrollTop = scroller.scrollHeight;
+    })
+
+    socketio.on("update_players", (data) => {
+        var players_list = document.getElementById("players_list");
+        players_list.innerHTML = "";
+        for (var i=0; i < data.length; i++) {
+            var name = document.createElement("li");
+            name.appendChild(document.createTextNode(data[i]));
+            players_list.appendChild(name);
+        }
+    })
+
+    const sendMessage = () => {
+        const message = document.getElementById("message");
+        if (message.value == "") return;
+        socketio.emit("message", {data: message.value});
+        message.value = "";
+    }
+
+    const leaveGame = () => {
+        socketio.disconnect();
+        window.location.href = "/";
+    }
+</script>
+{% for msg in messages %}
+    <script type="text/javascript">
+        createMessage("{{msg.name}}", "{{msg.message}}", "{{msg.date}}")
+    </script>
+{% endfor %}
+{% endblock %}

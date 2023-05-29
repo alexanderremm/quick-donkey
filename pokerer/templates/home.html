@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <form method="POST" class="landing-form">
+        {% if error %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{error}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+        <h3>Enter Poker Game</h3>
+        <div>
+            <label>Name:</label>
+            <input type="text" placeholder="Enter your name" name="name" value="{{name}}"/>
+        </div>
+        <div class="join">
+            <input type="text" placeholder="Game code" name="code" value="{{code}}"/>
+            <button type="submit" name="join" class="btn btn-success">Join Game</button>
+        </div>
+        <button type="submit" name="create" class="btn btn-primary">Create a Game</button>
+    </form>
+{% endblock %}

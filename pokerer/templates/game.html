@@ -4,7 +4,7 @@
     <h2>Game Code: {{game}}</h2>
     <button class="btn btn-danger" onclick="leaveGame()">Leave Game</button>
     <hr>
-    <h4>Voting:</h4>
+    <h4>Voting</h4>
     <hr>
     <div class="voting" id="voting">
         <nav>
@@ -48,14 +48,19 @@
         <button class="btn btn-success btn-vote" id="ready">Ready</button>
         <button class="btn btn-secondary btn-vote" id="unready">Unready</button>
     </div>
-    <hr>
-    <h4>Players:</h4>
-    <hr>
-    <div class="log" id="players">
-        <ol id="players_list"></ol>
+    <br>
+    <div id="players_container">
+        <table class="table table-striped border-top border-bottom border-1" id="players_table">
+            <thead class="table-dark">
+                <th scope="col">Player:</th>
+                <th scope="col">Ready:</th>
+                <th scope="col">Vote:</th>
+            </thead>
+            <tbody id="players_info"></tbody>
+        </table>
     </div>
     <hr>
-    <h4>Log:</h4>
+    <h4>Log</h4>
     <hr>
     <div class="log" id="log">
     </div>
@@ -98,13 +103,34 @@
         scrollChatToBottom();
     })
 
+    const createPlayerInfoRow = (name, ready, vote) => {
+        var row = document.createElement("tr");
+        var n = document.createElement("th");
+        n.scope = "row";
+        n.innerHTML = name;
+        var r = document.createElement("td");
+        r.innerHTML = ready;
+        var v = document.createElement("td");
+        v.innerHTML = vote;
+
+        row.appendChild(n);
+        row.appendChild(r);
+        row.appendChild(v);
+
+        return row;
+    }
+
     socketio.on("update_players", (data) => {
-        var players_list = document.getElementById("players_list");
-        players_list.innerHTML = "";
+        var players_list = document.getElementById("players_info");
+
+        // Remove existing data, except the table header
+        while (players_list.children.length > 0) {
+            players_list.removeChild(players_list.lastChild);
+        }
+
+        // Update the player info. table
         for (var i=0; i < data.length; i++) {
-            var name = document.createElement("li");
-            name.appendChild(document.createTextNode(data[i]));
-            players_list.appendChild(name);
+            players_list.appendChild(createPlayerInfoRow(data[i], "N", "N"));
         }
     })
 

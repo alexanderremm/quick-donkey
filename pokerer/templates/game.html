@@ -49,7 +49,7 @@
         <button class="btn btn-secondary btn-vote" id="unready">Unready</button>
     </div>
     <br>
-    <div id="players_container">
+    <div class="log" id="players_container">
         <table class="table table-striped border-top border-bottom border-1" id="players_table">
             <thead class="table-dark">
                 <th scope="col">Player:</th>
@@ -130,7 +130,7 @@
 
         // Update the player info. table
         for (var i=0; i < data.length; i++) {
-            players_list.appendChild(createPlayerInfoRow(data[i], "N", "N"));
+            players_list.appendChild(createPlayerInfoRow(data[i]["name"], "N", "N"));
         }
     })
 

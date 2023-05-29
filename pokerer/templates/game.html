@@ -130,7 +130,7 @@
 
         // Update the player info. table
         for (var i=0; i < data.length; i++) {
-            players_list.appendChild(createPlayerInfoRow(data[i]["name"], "N", "N"));
+            players_list.appendChild(createPlayerInfoRow(data[i]["name"], data[i]["ready"], data[i]["vote"]));
         }
     })
 

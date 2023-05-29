@@ -84,6 +84,14 @@ class GameManager:
         if self.games[code].num_members <= 0:
             del self.games[code]
 
+    def update_player_ready_status(self, code, name, ready_status):
+        if name not in self.get_list_of_player_names_in_game(code):
+            raise KeyError(f"No user with the name {name} in game with code {code}")
+        
+        player = self.games[code].get_player_by_name(name)
+        player.ready = ready_status
+
+
     def __generate_unique_code(self, length):
         while True:
             code = ""

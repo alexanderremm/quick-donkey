@@ -161,5 +161,31 @@ def create_app(test_config=None):
 
         # Update player list on clients
         emit("update_players", GM.convert_game_players_list_to_json(game), to=game)
+
+    @socketio.on("ready_update")
+    def ready_update(data):
+        game = session.get("game")
+        name = session.get("name")
+
+        # Make sure the game exists
+        if not GM.valid_game(game):
+            return
+        
+        # Update player's ready status
+        is_ready = data["data"]
+        GM.update_player_ready_status(game, name, is_ready)
+        if is_ready:
+            msg = Message(name, "is ready!")
+            print(f"{name} is ready!\n")
+        else:
+            msg = Message(name, "is not ready.")
+            print(f"{name} is not ready.\n")
+        
+        # Log the event
+        GM.add_message_to_game(game, msg)
+        send(msg.to_json(), to=game)
+
+        # Update player list on clients
+        emit("update_players", GM.convert_game_players_list_to_json(game), to=game)
     
     return app, socketio

@@ -45,8 +45,8 @@
                 <span>☕</span> 
             </label>
         </nav>
-        <button class="btn btn-success btn-vote" id="ready">Ready</button>
-        <button class="btn btn-secondary btn-vote" id="unready">Unready</button>
+        <button class="btn btn-success btn-vote" id="ready" onclick="readyUp()">Ready</button>
+        <button class="btn btn-secondary btn-vote" id="unready" onclick="unready()">Unready</button>
     </div>
     <br>
     <div class="log" id="players_container">
@@ -108,8 +108,14 @@
         var n = document.createElement("th");
         n.scope = "row";
         n.innerHTML = name;
+        
         var r = document.createElement("td");
-        r.innerHTML = ready;
+        if (ready) {
+            r.innerHTML = "✅";
+        } else{
+            r.innerHTML = "❌";
+        }
+
         var v = document.createElement("td");
         v.innerHTML = vote;
 
@@ -144,6 +150,14 @@
     const leaveGame = () => {
         socketio.disconnect();
         window.location.href = "/";
+    }
+
+    const readyUp = () => {
+        socketio.emit("ready_update", {data: true});
+    }
+
+    const unready = () => {
+        socketio.emit("ready_update", {data: false});
     }
 </script>
 {% for msg in messages %}

@@ -40,3 +40,8 @@ class Game:
             tmp.append(msg.to_json())
         
         return tmp
+    
+    def get_player_by_name(self, name):
+        for member in self.members:
+            if name == member.name:
+                return member

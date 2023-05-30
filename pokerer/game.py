@@ -26,6 +26,7 @@ class Game:
         self.num_members = 0
         self.members = []
         self.messages = []
+        self.show_votes = False
 
     def convert_players_list_to_json(self):
         tmp = []

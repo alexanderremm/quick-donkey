@@ -45,8 +45,14 @@
                 <span>☕</span> 
             </label>
         </nav>
-        <button class="btn btn-success btn-vote" id="ready" onclick="readyUp()">Ready</button>
-        <button class="btn btn-secondary btn-vote" id="unready" onclick="unready()">Unready</button>
+        <div>
+            <button class="btn btn-success btn-vote" id="ready" onclick="readyUp()">Ready</button>
+            <button class="btn btn-secondary btn-vote" id="unready" onclick="unready()">Unready</button>
+        </div>
+        <div>
+            <button class="btn btn-warning btn-vote" id="show_votes" onclick="showVotes()">Show/Hide Votes</button>
+            <button class="btn btn-info btn-vote" id="clear_votes" onclick="clearVotes()">Clear Votes</button>
+        </div>
     </div>
     <br>
     <div class="log" id="players_container">
@@ -82,6 +88,11 @@
     var socketio = io();
 
     const messages = document.getElementById("log");
+    
+    var SHOW_VOTES = false;
+    socketio.on("toggle_show_votes", (data) => {
+        SHOW_VOTES = data["show_votes"];
+    });
 
     const createMessage = (name, msg, date) => {
         const content = 
@@ -126,7 +137,7 @@
         return row;
     }
 
-    socketio.on("update_players", (data) => {
+    const refreshPlayerBoard = (data) => {
         var players_list = document.getElementById("players_info");
 
         // Remove existing data, except the table header
@@ -136,8 +147,17 @@
 
         // Update the player info. table
         for (var i=0; i < data.length; i++) {
-            players_list.appendChild(createPlayerInfoRow(data[i]["name"], data[i]["ready"], data[i]["vote"]));
+            // Check if we should show the votes to everyone
+            if (SHOW_VOTES) {
+                players_list.appendChild(createPlayerInfoRow(data[i]["name"], data[i]["ready"], data[i]["vote"]));
+            } else {
+                players_list.appendChild(createPlayerInfoRow(data[i]["name"], data[i]["ready"], "🙈"));
+            }
         }
+    }
+
+    socketio.on("update_players", (data) => {
+        refreshPlayerBoard(data);
     })
 
     const sendMessage = () => {
@@ -158,7 +178,6 @@
         for (var i=0; i < vote_vals.length; i++) {
             if (vote_vals[i].checked) {
                 val = vote_vals[i].value;
-                console.log(val);
             }
         }
         socketio.emit("ready_update", {is_ready: true, vote: val});
@@ -166,6 +185,14 @@
 
     const unready = () => {
         socketio.emit("ready_update", {is_ready: false, vote: null});
+    }
+
+    const showVotes = () => {
+        socketio.emit("toggle_show_votes");
+    }
+
+    const clearVotes = () => {
+        socketio.emit("clear_votes");
     }
 </script>
 {% for msg in messages %}

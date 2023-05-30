@@ -92,6 +92,16 @@ class GameManager:
         player.ready = ready_status
         player.vote = vote
 
+    def should_show_votes(self, code):
+        return self.games[code].show_votes
+    
+    def toggle_show_votes(self, code):
+        self.games[code].show_votes = not self.games[code].show_votes
+
+    def reset_game_votes(self, code):
+        for player in self.games[code].members:
+            player.ready = False
+            player.vote = None
 
     def __generate_unique_code(self, length):
         while True:

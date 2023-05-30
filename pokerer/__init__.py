@@ -188,5 +188,46 @@ def create_app(test_config=None):
 
         # Update player list on clients
         emit("update_players", GM.convert_game_players_list_to_json(game), to=game)
+
+    @socketio.on("toggle_show_votes")
+    def toggle_show_votes():
+        game = session.get("game")
+        name = session.get("name")
+
+        # Make sure the game exists
+        if not GM.valid_game(game):
+            return
+        
+        # Toggle the show/hide votes
+        GM.toggle_show_votes(game)
+
+        # Log the event
+        msg = Message(name, "toggled show/hide votes")
+        GM.add_message_to_game(game, msg)
+        send(msg.to_json(), to=game)
+
+        emit("toggle_show_votes", {"show_votes": GM.should_show_votes(game)}, to=game)
+        # Update player list on clients
+        emit("update_players", GM.convert_game_players_list_to_json(game), to=game)
+
+    @socketio.on("clear_votes")
+    def clear_votes():
+        game = session.get("game")
+        name = session.get("name")
+
+        # Make sure the game exists
+        if not GM.valid_game(game):
+            return
     
+        # Log the event
+        msg = Message(name, "cleared all votes")
+        GM.add_message_to_game(game, msg)
+        send(msg.to_json(), to=game)
+
+        GM.reset_game_votes(game)
+
+        emit("toggle_show_votes", {"show_votes": False}, to=game)
+        # Update player list on clients
+        emit("update_players", GM.convert_game_players_list_to_json(game), to=game)
+
     return app, socketio
